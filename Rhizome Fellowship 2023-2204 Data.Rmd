@@ -1,0 +1,341 @@
+---
+title: "Rhizome Fellowship Data"
+author: "Eric Forteza"
+date: "2023-09-10"
+output:
+  pdf_document: 
+    fig_crop: no
+  html_document:
+    df_print: paged
+---
+
+
+
+
+```{r, include = FALSE}
+rhizome <- read.csv("rhizome.csv")
+library (ggplot2)
+library (tidyverse)
+library (lubridate)
+library (tinytex)
+library(repr)
+
+rhizome [rhizome == ''] <- NA
+
+## FF9F1C- Orange Peel
+## FFBF69- Mellow Apricot
+## FFFFFF- White
+## CBF3F0- Light Cyan
+## 2EC4B6- Tiffany Blue
+```
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+
+```{r, fig.align='center', echo = FALSE}
+## convert days into weeks to create bar graph, week is counted from monday through sunday. Display.
+rhizome$week_num <- strftime (rhizome$date_applied, format = "%V")
+rhizome <- rhizome |>
+mutate (week_num = case_when(
+week_num == "31" ~ "07/31-08/06",
+week_num == "32" ~ "08/07-08/13",
+week_num == "33" ~ "08/14-08/20",
+week_num == "34" ~ "08/21-08/27",
+week_num == "35" ~ "08/28-09/03"))
+rhizome_plot2 <- ggplot(rhizome, mapping = aes (x = week_num, fill = week_num)) +
+geom_bar(alpha = 1, width = .6, show.legend = FALSE, position = "dodge", col.axis = "orange") +
+scale_fill_manual(values = c("#CBF3F0", "#CBF3F0", "#CBF3F0","#CBF3F0", "#CBF3F0" )) +
+labs (title = "Number of Rhizome Civic Service Fellowship Applicants per Week",
+x = "Week", y = "Number of Applicants",
+caption = "Rhizome Civic Service Fellowship 2023-2024")+
+theme_classic() +
+ggtitle("Number of Rhizome Civic Service Fellowship Applicants per Week") +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme (plot.title = element_text (face = "bold")) +
+theme (plot.caption = element_text (face = "bold")) +
+theme (panel.background = element_rect (fill = "#FFBF69")) +
+theme (axis.line.x.bottom = element_line(size = 1.2)) +
+theme (axis.line.y.left = element_line(size = 1.2))+
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+```
+
+```{r, fig.align='center', echo = FALSE}
+eight_seven_through_nine_three <- rhizome %>%
+filter(date_applied >= as.Date("2023-05-05") & date_applied <= as.Date("2023-09-03"))
+eight_seven_through_nine_three <- ggplot(eight_seven_through_nine_three, mapping = aes (x = week_num, fill = week_num)) +
+geom_bar(alpha = 1, width = .6, show.legend = FALSE, position = "dodge") +
+scale_fill_manual(values = c("#2EC4B6", "#2EC4B6","#2EC4B6", "#2EC4B6", "#2EC4B6")) +
+labs (title = "Number of Rhizome Civic Service Fellowship Applicants per Week",
+x = "Week", y = "Number of Applicants",
+caption = "Rhizome Civic Service Fellowship 2023-2024")+
+theme_classic() +
+  ggtitle("Rhizome Civic Service Fellowship Applicants per Week") +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme (plot.title = element_text (face = "bold")) +
+theme (plot.caption = element_text (face = "bold")) +
+theme (panel.background = element_rect (fill = "#FFFFFF")) +
+theme (axis.line.x.bottom = element_line(size = 1.2)) +
+theme (axis.line.y.left = element_line(size = 1.2))+
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+eight_seven_through_nine_three
+```
+
+```{r, fig.align='center', echo = FALSE}
+rhizome$Grade <- factor(rhizome$Grade,                                    # Change ordering manually
+                  levels = c("9", "10", "11", "12", "college-age"))
+
+
+rhizome_grade <- ggplot(rhizome, mapping = aes (x = week_num, fill = Grade, color = Grade)) +
+geom_bar( position = "stack", lty="blank") +
+scale_fill_manual(values = c("#FF9F1C", "#FFBF69", "#CBF3F0", "#2EC4B6", "#0e4d48", "#0e4d48")) +
+labs (title = "Number of Rhizome Civic Service Fellowship Applicants per Week",
+x = "Week", y = "Number of Applicants",
+caption = "Rhizome Civic Service Fellowship 2023-2024")+
+theme_classic() +
+ggtitle("Rhizome Civic Service Fellowship  \n Fellowship Applicants per Week by Grade Level") +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme (plot.title = element_text (face = "bold")) +
+theme (plot.caption = element_text (face = "bold")) +
+theme (panel.background = element_rect (fill = "#FFFFFF")) +
+theme (axis.line.x.bottom = element_line(size = 1.2)) +
+theme (axis.line.y.left = element_line(size = 1.2)) + 
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+rhizome_grade
+
+```
+
+```{r, fig.align ='center', echo = FALSE}
+rhizome_awareness <- ggplot(rhizome, mapping = aes (x = week_num, fill = Outreach_Method)) +
+geom_bar( position = "stack", lty="blank") +
+scale_fill_manual(values = c("#be7108", "#FF9F1C", "#FFBF69", "#CBF3F0", "#2EC4B6", "#0e4d48")) +
+labs (title = "Number of Rhizome Civic Service Fellowship Applicants per Week by Outreach Method",
+x = "Week", y = "Number of Applicants",
+caption = "Rhizome Civic Service Fellowship 2023-2024")+
+theme_classic() +
+ggtitle("Rhizome Civic Service Fellowship \n Applications per Week by Outreach Method") +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme (plot.title = element_text (face = "bold")) +
+theme (plot.caption = element_text (face = "bold")) +
+theme (panel.background = element_rect (fill = "#FFFFFF")) +
+theme (axis.line.x.bottom = element_line(size = 1.2)) +
+theme (axis.line.y.left = element_line(size = 1.2)) +
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+rhizome_awareness
+```
+
+```{r, echo = FALSE}
+
+rhizome_ethnicity_data <- rhizome |>
+   filter(!is.na(Ethnicity))
+
+rhizome_ethnicity<- ggplot(rhizome_ethnicity_data, mapping = aes (x = week_num, fill = Ethnicity, na.rm = TRUE)) +
+geom_bar( position = "stack", lty="blank") +
+scale_fill_manual(values = c("#a54b09", "#FF9F1C", "#FFBF69", "#CBF3F0", "#2EC4B6", "#0e4d48","#FFBF69")) +
+labs (title = "Number of Rhizome Civic Service Fellowship Applicants per Week by Ethnicity",
+x = "Week", y = "Number of Applicants",
+caption = "Rhizome Civic Service Fellowship 2023-2024")+
+theme_classic() +
+ggtitle("Ethnicity of Rhizome Civic Service Fellowship \n Applicants per Week") +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme (plot.title = element_text (face = "bold")) +
+theme (plot.caption = element_text (face = "bold")) +
+theme (panel.background = element_rect (fill = "#FFFFFF")) +
+theme (axis.line.x.bottom = element_line(size = 1.2)) +
+theme (axis.line.y.left = element_line(size = 1.2)) +
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+rhizome_ethnicity
+```
+
+
+```{r, echo =  FALSE}
+rhizome_decision <- ggplot(rhizome, mapping = aes (x = week_num, fill = Decision, color = Decision)) +
+geom_bar( position = "stack", lty="blank") +
+scale_fill_manual(values = c("#FF9F1C", "#FFBF69", "#2EC4B6", "#2EC4B6" )) +
+labs (title = "Rhizome Civic Service Fellowship Decisions per Week",
+x = "Week", y = "Number of Applicants",
+caption = "Rhizome Civic Service Fellowship 2023-2024")+
+theme_classic() +
+ggtitle("Rhizome Civic Service Fellowship Decisions") +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme (plot.title = element_text (face = "bold")) +
+theme (plot.caption = element_text (face = "bold")) +
+theme (panel.background = element_rect (fill = "#FFFFFF")) +
+theme (axis.line.x.bottom = element_line(size = 1.2)) +
+theme (axis.line.y.left = element_line(size = 1.2)) +
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+  
+
+rhizome_decision
+```
+
+```{r, echo =  FALSE}
+rhizome_LGBT <- rhizome |>
+   filter(!is.na(LGBTQ_Affinity))
+
+rhizome_lgbt<- ggplot(rhizome_LGBT, mapping = aes (x = week_num, fill = LGBTQ_Affinity, color = LGBTQ_Affinity)) +
+geom_bar( position = "stack", lty="blank") +
+scale_fill_manual(values = c( "#2EC4B6", "#0e4d48","#FFBF69")) +
+labs (title = "Number of LGBTQ+ Rhizome Civic Service Fellowship Applicants per Week",
+x = "Week", y = "Number of Applicants",
+caption = "Rhizome Civic Service Fellowship 2023-2024")+
+theme_classic() +
+ggtitle("Rhizome Civic Service Fellowship \n LGBTQ+ Applicants per Week") +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme (plot.title = element_text (face = "bold")) +
+theme (plot.caption = element_text (face = "bold")) +
+theme (panel.background = element_rect (fill = "#FFFFFF")) +
+theme (axis.line.x.bottom = element_line(size = 1.2)) +
+theme (axis.line.y.left = element_line(size = 1.2))+
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+rhizome_lgbt
+```
+
+```{r, echo =  FALSE}
+rhizome_gender <- rhizome |>
+   filter(!is.na(Gender_Affinity))
+
+rhizome_gender<- ggplot(rhizome_gender, mapping = aes (x = week_num, fill = Gender_Affinity, color = Gender_Affinity)) +
+geom_bar( position = "stack", lty="blank") +
+scale_fill_manual(values = c( "#FF9F1C", "#0e4d48","#FFBF69")) +
+labs (title = "Gender Identity of Rhizome Civic Service Fellowship Applicants per Week",
+x = "Week", y = "Number of Applicants",
+caption = "Rhizome Civic Service Fellowship 2023-2024")+
+theme_classic() +
+ggtitle("Applicants interested  in the \n Women's Affinity Group per Week") +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme (plot.title = element_text (face = "bold")) +
+theme (plot.caption = element_text (face = "bold")) +
+theme (panel.background = element_rect (fill = "#FFFFFF")) +
+theme (axis.line.x.bottom = element_line(size = 1.2)) +
+theme (axis.line.y.left = element_line(size = 1.2))+
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+rhizome_gender
+```
+
+```{r, echo =  FALSE}
+rhizome_gender_id <- rhizome |>
+   filter(!is.na(Gender_Identity_Affinity))
+
+rhizome_gender_identity <- ggplot(rhizome_gender_id, mapping = aes (x = week_num, fill = Gender_Identity_Affinity, color = Gender_Identity_Affinity)) +
+geom_bar( position = "stack", lty="blank") +
+scale_fill_manual(values = c( "#2EC4B6", "#0e4d48","#FFBF69")) +
+labs (title = "Gender Identity of Rhizome Civic Service Fellowship Applicants per Week",
+x = "Week", y = "Number of Applicants",
+caption = "Rhizome Civic Service Fellowship 2023-2024")+
+theme_classic() +
+ggtitle("Rhizome Civic Service Fellowship \n Gender Nonconforming Applicants per Week") +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme (plot.title = element_text (face = "bold")) +
+theme (plot.caption = element_text (face = "bold")) +
+theme (panel.background = element_rect (fill = "#FFFFFF")) +
+theme (axis.line.x.bottom = element_line(size = 1.2)) +
+theme (axis.line.y.left = element_line(size = 1.2))+
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+rhizome_gender_identity
+```
+
+```{r, echo =  FALSE}
+
+rhizome_ability_data <- rhizome |>
+   filter(!is.na(Disabilites_Affinity))
+
+rhizome_ability <- ggplot(rhizome_ability_data, mapping = aes (x = week_num, fill = Disabilites_Affinity, color = Disabilites_Affinity)) +
+geom_bar( position = "stack", lty="blank") +
+scale_fill_manual(values = c("#FF9F1C", "#0e4d48","#FFBF69")) +
+labs (title = "Number of Rhizome Civic Service Fellowship Applicants with Disabilities per Week",
+x = "Week", y = "Number of Applicants",
+caption = "Rhizome Civic Service Fellowship 2023-2024")+
+theme_classic() +
+ggtitle("Rhizome Civic Service Fellowship \n Applicants with Disabilities per Week") +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme (plot.title = element_text (face = "bold")) +
+theme (plot.caption = element_text (face = "bold")) +
+theme (panel.background = element_rect (fill = "#FFFFFF")) +
+theme (axis.line.x.bottom = element_line(size = 1.2)) +
+theme (axis.line.y.left = element_line(size = 1.2))+
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+rhizome_ability
+```
+
+```{r, echo =  FALSE}
+rhizome_first_gen_data <- rhizome |>
+   filter(!is.na(First_Generation_College))
+
+rhizome_first_gen <- ggplot(rhizome_first_gen_data, mapping = aes (x = week_num, fill = First_Generation_College, color = First_Generation_College)) +
+geom_bar( position = "stack", lty="blank") +
+scale_fill_manual(values = c( "#2EC4B6", "#0e4d48","#FFBF69")) +
+labs (title = "Number of First-Generation Rhizome Civic Service Fellowship Applicants per Week",
+x = "Week", y = "Number of Applicants",
+caption = "Rhizome Civic Service Fellowship 2023-2024")+
+theme_classic() +
+ggtitle("Rhizome Civic Service Fellowship \n First-Generation College Applicants per Week") +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme (plot.title = element_text (face = "bold")) +
+theme (plot.caption = element_text (face = "bold")) +
+theme (panel.background = element_rect (fill = "#FFFFFF")) +
+theme (axis.line.x.bottom = element_line(size = 1.2)) +
+theme (axis.line.y.left = element_line(size = 1.2))+
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
+
+rhizome_first_gen
+```
+
+
+```{r, echo =  FALSE}
+
+rhizome_immigrants_data <- rhizome |>
+   filter(!is.na(First_Generation_Immigrant))
+
+rhizome_immigrants <- ggplot(rhizome_immigrants_data, mapping = aes (x = week_num, fill = First_Generation_Immigrant, color = First_Generation_Immigrant)) +
+geom_bar( position = "stack", lty="blank") +
+scale_fill_manual(values = c( "#FF9F1C", "#0e4d48","#FFBF69")) +
+labs (title = "Number of Immigrant Rhizome Civic Service Fellowship Applicants per Week",
+x = "Week", y = "Number of Applicants",
+caption = "Rhizome Civic Service Fellowship 2023-2024")+
+theme_classic() +
+ggtitle("Rhizome Civic Service Fellowship \n First Generation Immigrant Applicants per Week") +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme (plot.title = element_text (face = "bold")) +
+theme (plot.caption = element_text (face = "bold")) +
+theme (panel.background = element_rect (fill = "#FFFFFF")) +
+theme (axis.line.x.bottom = element_line(size = 1.2)) +
+theme (axis.line.y.left = element_line(size = 1.2))+
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1)) 
+
+rhizome_immigrants
+```
+
+```{r, echo=FALSE}
+
+rhizome_income_data <- rhizome |>
+   filter(!is.na(Income))
+
+rhizome_income <- ggplot(rhizome_income_data, mapping = aes (x = week_num, fill = Income, color = Income)) +
+geom_bar( position = "stack", lty="blank") +
+scale_fill_manual(values = c("#2EC4B6", "#0e4d48","#FFBF69")) +
+labs (title = "Number of Lower Income Rhizome Civic Service Fellowship Applicants per Week",
+x = "Week", y = "Number of Applicants",
+caption = "Rhizome Civic Service Fellowship 2023-2024")+
+theme_classic() +
+ggtitle("Rhizome Civic Service Fellowship \n Low Income Applicants per Week") +
+theme(plot.title = element_text(hjust = 0.5)) +
+theme (plot.title = element_text (face = "bold")) +
+theme (plot.caption = element_text (face = "bold")) +
+theme (panel.background = element_rect (fill = "#FFFFFF")) +
+theme (axis.line.x.bottom = element_line(size = 1.2)) +
+theme (axis.line.y.left = element_line(size = 1.2))+
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1)) 
+
+rhizome_income
+```
