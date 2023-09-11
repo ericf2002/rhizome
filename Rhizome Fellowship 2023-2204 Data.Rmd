@@ -1,7 +1,6 @@
 ---
 title: "Rhizome Fellowship Data"
 author: "Eric Forteza"
-date: "2023-09-10"
 output:
   pdf_document: 
     fig_crop: no
